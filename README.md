@@ -16,6 +16,7 @@ Create a `.env` file like below example:
 AWS_SECRET_KEY_ID=SOMEID
 AWS_SECRET_ACCESS_KEY=SOMESECRET
 S3_BUCKET_NAME=SOMEBUCKET
+META_FOLDER=meta
 ```
 
 ### Usage

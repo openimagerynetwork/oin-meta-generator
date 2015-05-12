@@ -7,6 +7,8 @@ var gdalinfo = require('gdalinfo-json');
 var _ = require('lodash');
 var config = require('./config.json');
 
+var meta_folder = process.env.META_FOLDER || 'meta';
+
 var client = s3.createClient({
   maxAsyncS3: 20,     // this is the default
   s3RetryCount: 3,    // this is the default
@@ -28,7 +30,7 @@ var params = {
 var images = client.listObjects(params);
 
 //Make sure meta directory exist
-fs.mkdirsSync('meta');
+fs.mkdirsSync(meta_folder);
 
 images.on('data', function(data){
 
@@ -92,7 +94,7 @@ var generateMeta = function(url, platform, provider, contact, callback) {
     metadata.bbox = [_.min(x), _.min(y), _.max(x), _.max(y)];
     metadata.footprint = 'POLYGON((' + footprint.join() + '))';
 
-    fs.writeFile('meta/' + filename + '_meta.json', JSON.stringify(metadata), function(err) {
+    fs.writeFile(meta_folder + '/' + filename + '_meta.json', JSON.stringify(metadata), function(err) {
         if(err) {
             callback(err);
             return;

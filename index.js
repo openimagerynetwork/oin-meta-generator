@@ -1,3 +1,4 @@
+'use strict';
 
 require("envloader").load();
 
@@ -65,7 +66,7 @@ var generateMeta = function(url, platform, provider, contact, callback) {
     provider: provider,
     contact: contact,
     properties: {}
-  }
+  };
 
   gdalinfo.remote(url, function(err, oin) {
     if (err) {
@@ -74,7 +75,7 @@ var generateMeta = function(url, platform, provider, contact, callback) {
     }
 
     var filename = oin.url.split('/');
-    var filename = filename[filename.length - 1];
+    filename = filename[filename.length - 1];
 
     metadata.uuid = oin.url;
     metadata.title = filename;
@@ -85,10 +86,12 @@ var generateMeta = function(url, platform, provider, contact, callback) {
     var y = [];
     var footprint = [];
 
-    for (key in oin.corners_lon_lat) {
-      x.push(oin.corners_lon_lat[key][0]);
-      y.push(oin.corners_lon_lat[key][1]);
-      footprint.push(oin.corners_lon_lat[key][0] + ' ' + oin.corners_lon_lat[key][1]);
+    for (var key in oin.corners_lon_lat) {
+      if (oin.corners_lon_lat.hasOwnProperty(key)) {
+        x.push(oin.corners_lon_lat[key][0]);
+        y.push(oin.corners_lon_lat[key][1]);
+        footprint.push(oin.corners_lon_lat[key][0] + ' ' + oin.corners_lon_lat[key][1]);
+      }
     }
 
     metadata.bbox = [_.min(x), _.min(y), _.max(x), _.max(y)];
@@ -103,4 +106,4 @@ var generateMeta = function(url, platform, provider, contact, callback) {
         callback(err, 'The file saved!: ' + filename + '_meta.json');
     });
   });
-}
+};

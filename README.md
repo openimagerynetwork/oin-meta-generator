@@ -4,7 +4,7 @@ This node app reads objects from a S3 bucket and generates metadata json files b
 
 ### Dependencies
 
-You must have GDAL installed on your machine
+You must have GDAL installed.
 
 ### Setup
 

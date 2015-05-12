@@ -32,12 +32,19 @@ fs.mkdirsSync('meta');
 
 images.on('data', function(data){
 
-  for (i = 1; i < data.Contents.length; i++) {
-    var url = s3.getPublicUrlHttp(params.s3Params.Bucket, data.Contents[i].Key);
-    generateMeta(url, config.platform, config.provider, config.contact, function(msg){
-      console.log(msg);
-    });
+  function iterator(i) {
+    if (i < data.Contents.length) {
+      var url = s3.getPublicUrlHttp(params.s3Params.Bucket, data.Contents[i].Key);
+      generateMeta(url, config.platform, config.provider, config.contact, function(err, msg){
+        console.log(msg);
+        iterator(i+1);
+      });
+    }
+    else {
+      console.log(i + 'meta files were generated.');
+    }
   }
+  iterator(0);
 
 });
 
@@ -63,6 +70,7 @@ var generateMeta = function(url, platform, provider, contact, callback) {
       callback(err);
       return;
     }
+
     var filename = oin.url.split('/');
     var filename = filename[filename.length - 1];
 
@@ -90,7 +98,7 @@ var generateMeta = function(url, platform, provider, contact, callback) {
             return;
         }
 
-        callback('The file saved!: ' + filename + '_meta.json');
+        callback(err, 'The file saved!: ' + filename + '_meta.json');
     });
   });
 }

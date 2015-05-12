@@ -32,7 +32,7 @@ fs.mkdirsSync('meta');
 
 images.on('data', function(data){
 
-  for (i = 100; i < 105; i++) {
+  for (i = 1; i < data.Contents.length; i++) {
     var url = s3.getPublicUrlHttp(params.s3Params.Bucket, data.Contents[i].Key);
     generateMeta(url, config.platform, config.provider, config.contact, function(msg){
       console.log(msg);

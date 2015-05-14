@@ -10,6 +10,8 @@ var config = require('./config.json');
 
 var meta_folder = process.env.META_FOLDER || 'meta';
 
+var limitParallel = 20;
+
 var client = s3.createClient({
   maxAsyncS3: 20,     // this is the default
   s3RetryCount: 3,    // this is the default
@@ -33,22 +35,30 @@ var images = client.listObjects(params);
 //Make sure meta directory exist
 fs.mkdirsSync(meta_folder);
 
-images.on('data', function(data){
+var totalMetaCount = 0;
 
-  function iterator(i) {
-    if (i < data.Contents.length) {
-      var url = s3.getPublicUrlHttp(params.s3Params.Bucket, data.Contents[i].Key);
-      generateMeta(url, config.platform, config.provider, config.contact, function(err, msg){
-        console.log(msg);
-        iterator(i+1);
-      });
-    }
-    else {
-      console.log(i + 'meta files were generated.');
-    }
+function iterator(i, end, payload) {
+  if (i < end) {
+    var url = s3.getPublicUrlHttp(params.s3Params.Bucket, payload[i].Key);
+    generateMeta(url, config.platform, config.provider, config.contact, function(err, msg){
+      console.log(msg);
+      totalMetaCount++;
+      iterator(i+1, end, payload);
+    });
   }
-  iterator(0);
+  else {
+    console.log(totalMetaCount + 'meta files were generated.');
+  }
+}
 
+images.on('data', function(data){
+  var total = data.Contents.length;
+  var chunks = Math.floor(total / limitParallel);
+
+  for (var i=0; i < limitParallel; i++) {
+    var start = chunks * i;
+    iterator(start, start + chunks, data.Contents);
+  }
 });
 
 var generateMeta = function(url, platform, provider, contact, callback) {
@@ -95,7 +105,7 @@ var generateMeta = function(url, platform, provider, contact, callback) {
     }
 
     metadata.bbox = [_.min(x), _.min(y), _.max(x), _.max(y)];
-    metadata.footprint = 'POLYGON((' + footprint.join() + '))';
+    metadata.footprint = 'POLYGON((' + footprint.join() + ',' + footprint[0] +'))';
 
     fs.writeFile(meta_folder + '/' + filename + '_meta.json', JSON.stringify(metadata), function(err) {
         if(err) {

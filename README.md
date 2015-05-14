@@ -22,3 +22,5 @@ META_FOLDER=meta
 ### Usage
 
     $ node index.js
+
+The defaul setting runs 20 tasks in parallel. You can change the number by playing around with `var limitParallel = 20;` on line 13 of `index.js`

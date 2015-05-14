@@ -1,6 +1,6 @@
 'use strict';
 
-require("envloader").load();
+require('envloader').load();
 
 var fs = require('fs-extra');
 var s3 = require('s3');
@@ -20,48 +20,51 @@ var client = s3.createClient({
   multipartUploadSize: 15728640, // this is the default (15 MB)
   s3Options: {
     accessKeyId: process.env.AWS_SECRET_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  },
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+  }
 });
 
 var params = {
   s3Params: {
-    Bucket: process.env.S3_BUCKET_NAME, /* required */
-  },
+    Bucket: process.env.S3_BUCKET_NAME /* required */
+  }
 };
 
 var images = client.listObjects(params);
 
-//Make sure meta directory exist
+// Make sure meta directory exist
 fs.mkdirsSync(meta_folder);
 
 var totalMetaCount = 0;
 
-function iterator(i, end, payload) {
+function iterator (i, end, payload) {
   if (i < end) {
     var url = s3.getPublicUrlHttp(params.s3Params.Bucket, payload[i].Key);
-    generateMeta(url, config.platform, config.provider, config.contact, function(err, msg){
+    generateMeta(url, config.platform, config.provider, config.contact, function (err, msg) {
+      if (err) {
+        console.log(err);
+        return;
+      }
       console.log(msg);
       totalMetaCount++;
-      iterator(i+1, end, payload);
+      iterator(i + 1, end, payload);
     });
-  }
-  else {
+  } else {
     console.log(totalMetaCount + 'meta files were generated.');
   }
 }
 
-images.on('data', function(data){
+images.on('data', function (data) {
   var total = data.Contents.length;
   var chunks = Math.floor(total / limitParallel);
 
-  for (var i=0; i < limitParallel; i++) {
+  for (var i = 0; i < limitParallel; i++) {
     var start = chunks * i;
     iterator(start, start + chunks, data.Contents);
   }
 });
 
-var generateMeta = function(url, platform, provider, contact, callback) {
+var generateMeta = function (url, platform, provider, contact, callback) {
   var metadata = {
     uuid: null,
     title: null,
@@ -78,7 +81,7 @@ var generateMeta = function(url, platform, provider, contact, callback) {
     properties: {}
   };
 
-  gdalinfo.remote(url, function(err, oin) {
+  gdalinfo.remote(url, function (err, oin) {
     if (err) {
       callback(err);
       return;
@@ -105,15 +108,15 @@ var generateMeta = function(url, platform, provider, contact, callback) {
     }
 
     metadata.bbox = [_.min(x), _.min(y), _.max(x), _.max(y)];
-    metadata.footprint = 'POLYGON((' + footprint.join() + ',' + footprint[0] +'))';
+    metadata.footprint = 'POLYGON((' + footprint.join() + ',' + footprint[0] + '))';
 
-    fs.writeFile(meta_folder + '/' + filename + '_meta.json', JSON.stringify(metadata), function(err) {
-        if(err) {
-            callback(err);
-            return;
-        }
+    fs.writeFile(meta_folder + '/' + filename + '_meta.json', JSON.stringify(metadata), function (err) {
+      if (err) {
+        callback(err);
+        return;
+      }
 
-        callback(err, 'The file saved!: ' + filename + '_meta.json');
+      callback(err, 'The file saved!: ' + filename + '_meta.json');
     });
   });
 };

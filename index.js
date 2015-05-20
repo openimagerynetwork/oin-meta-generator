@@ -39,16 +39,19 @@ var totalMetaCount = 0;
 
 function iterator (i, end, payload) {
   if (i < end) {
-    var url = s3.getPublicUrlHttp(params.s3Params.Bucket, payload[i].Key);
-    generateMeta(url, config.platform, config.provider, config.contact, function (err, msg) {
-      if (err) {
-        console.log(err);
-        return;
-      }
-      console.log(msg);
-      totalMetaCount++;
-      iterator(i + 1, end, payload);
-    });
+    var f = payload[i].Key.split('.');
+    if (f[f.length - 1].toUpperCase() === 'TIF'){
+      var url = s3.getPublicUrlHttp(params.s3Params.Bucket, payload[i].Key);
+      generateMeta(url, config.platform, config.provider, config.contact, function (err, msg) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        console.log(msg);
+        totalMetaCount++;
+        iterator(i + 1, end, payload);
+      });
+    }
   } else {
     console.log(totalMetaCount + 'meta files were generated.');
   }

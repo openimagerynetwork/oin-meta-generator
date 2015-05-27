@@ -42,7 +42,7 @@ function iterator (i, end, payload) {
     var f = payload[i].Key.split('.');
     if (f[f.length - 1].toUpperCase() === 'TIF'){
       var url = s3.getPublicUrlHttp(params.s3Params.Bucket, payload[i].Key);
-      generateMeta(url, config.platform, config.provider, config.contact, function (err, msg) {
+      generateMeta(url, config.platform, config.provider, config.contact, config.properties, function (err, msg) {
         if (err) {
           console.log(err);
           return;
@@ -67,7 +67,7 @@ images.on('data', function (data) {
   }
 });
 
-var generateMeta = function (url, platform, provider, contact, callback) {
+var generateMeta = function (url, platform, provider, contact, properties, callback) {
   var metadata = {
     uuid: null,
     title: null,
@@ -81,7 +81,7 @@ var generateMeta = function (url, platform, provider, contact, callback) {
     platform: platform,
     provider: provider,
     contact: contact,
-    properties: {}
+    properties: properties
   };
 
   gdalinfo.remote(url, function (err, oin) {
@@ -97,6 +97,7 @@ var generateMeta = function (url, platform, provider, contact, callback) {
     metadata.title = filename;
     metadata.projection = oin.srs;
     metadata.gsd = _.sum(oin.pixel_size.map(Math.abs)) / 2 / 100;
+    metadata.properties.thumbnail = oin.url + '.thumb.jpg'
 
     var x = [];
     var y = [];

@@ -47,13 +47,11 @@ function iterator (i, end, payload) {
           console.log(err);
           return;
         }
-        console.log(msg);
         totalMetaCount++;
-        iterator(i + 1, end, payload);
+        process.stdout.write(totalMetaCount + ' - ' + msg + '\n');
       });
     }
-  } else {
-    console.log(totalMetaCount + 'meta files were generated.');
+    iterator(i + 1, end, payload);
   }
 }
 

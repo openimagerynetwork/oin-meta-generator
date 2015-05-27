@@ -40,7 +40,7 @@ var totalMetaCount = 0;
 function iterator (i, end, payload) {
   if (i < end) {
     var f = payload[i].Key.split('.');
-    if (f[f.length - 1].toUpperCase() === 'TIF'){
+    if (f[f.length - 1].toUpperCase() === 'TIF') {
       var url = s3.getPublicUrlHttp(params.s3Params.Bucket, payload[i].Key);
       generateMeta(url, config.platform, config.provider, config.contact, function (err, msg) {
         if (err) {
@@ -65,6 +65,10 @@ images.on('data', function (data) {
     var start = chunks * i;
     iterator(start, start + chunks, data.Contents);
   }
+});
+
+images.on('error', function(err) {
+  console.error('Caught an Error:', err.stack);
 });
 
 var generateMeta = function (url, platform, provider, contact, callback) {

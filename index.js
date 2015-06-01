@@ -99,7 +99,6 @@ var generateMeta = function (url, platform, provider, contact, properties, callb
     metadata.title = filename;
     metadata.projection = oin.srs;
     metadata.gsd = _.sum(oin.pixel_size.map(Math.abs)) / 2 / 100;
-    metadata.properties.thumbnail = oin.url + '.thumb.jpg'
 
     var x = [];
     var y = [];

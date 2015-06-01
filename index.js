@@ -39,18 +39,19 @@ var totalMetaCount = 0;
 
 function iterator (i, end, payload) {
   if (i < end) {
-    var url = s3.getPublicUrlHttp(params.s3Params.Bucket, payload[i].Key);
-    generateMeta(url, config.platform, config.provider, config.contact, function (err, msg) {
-      if (err) {
-        console.log(err);
-        return;
-      }
-      console.log(msg);
-      totalMetaCount++;
-      iterator(i + 1, end, payload);
-    });
-  } else {
-    console.log(totalMetaCount + 'meta files were generated.');
+    var f = payload[i].Key.split('.');
+    if (f[f.length - 1].toUpperCase() === 'TIF') {
+      var url = s3.getPublicUrlHttp(params.s3Params.Bucket, payload[i].Key);
+      generateMeta(url, config.platform, config.provider, config.contact, config.properties, function (err, msg) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        totalMetaCount++;
+        process.stdout.write(totalMetaCount + ' - ' + msg + '\n');
+      });
+    }
+    iterator(i + 1, end, payload);
   }
 }
 
@@ -64,7 +65,11 @@ images.on('data', function (data) {
   }
 });
 
-var generateMeta = function (url, platform, provider, contact, callback) {
+images.on('error', function(err) {
+  console.error('Caught an Error:', err.stack);
+});
+
+var generateMeta = function (url, platform, provider, contact, properties, callback) {
   var metadata = {
     uuid: null,
     title: null,
@@ -78,7 +83,7 @@ var generateMeta = function (url, platform, provider, contact, callback) {
     platform: platform,
     provider: provider,
     contact: contact,
-    properties: {}
+    properties: properties
   };
 
   gdalinfo.remote(url, function (err, oin) {

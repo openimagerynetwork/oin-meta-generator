@@ -1,5 +1,10 @@
 {
   "platform" : "satellite",
-  "provider" : "Some Company",
-  "contact" : "someone@nasa.gov"
+  "provider" : "some satellite company",
+  "contact" : "someone@satellitecompany.com",
+  "properties": {
+  	"thumbnail": "link to thumbnail if available",
+  	"tms": "link to TMS if available",
+  	"sensor": "name of satellite"
+  }
 }

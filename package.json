@@ -4,7 +4,8 @@
   "description": "A metadata generator for OAM imagery",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/semistandard/bin/cmd.js"
+    "test": "./node_modules/semistandard/bin/cmd.js",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",

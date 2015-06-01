@@ -8,19 +8,13 @@ You must have GDAL installed.
 
 ### Setup
 
-    $ npm install
+- `$ npm install`
+- Copy the `.env-sample` file to `.env` and edit with your own values.
+- Copy the `config-sample.json` file to `config.json` and edit with your own values.
 
-Create a `.env` file like below example:
-
-```bash
-AWS_SECRET_KEY_ID=SOMEID
-AWS_SECRET_ACCESS_KEY=SOMESECRET
-S3_BUCKET_NAME=SOMEBUCKET
-META_FOLDER=meta
-```
 
 ### Usage
 
-    $ node index.js
+    $ npm start
 
 The defaul setting runs 20 tasks in parallel. You can change the number by playing around with `var limitParallel = 20;` on line 13 of `index.js`

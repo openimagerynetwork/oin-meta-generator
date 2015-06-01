@@ -1,3 +1,5 @@
 node_modules
 .env
 meta
+npm-debug.log
+config.json

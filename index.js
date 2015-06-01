@@ -6,7 +6,23 @@ var fs = require('fs-extra');
 var s3 = require('s3');
 var gdalinfo = require('gdalinfo-json');
 var _ = require('lodash');
-var config = require('./config.json');
+
+// Make sure we have a config file
+var config;
+try {
+  config = require('./config.json');
+} catch (e) {
+  console.error('Please provide a valid config.json file.');
+  process.exit(1);
+}
+
+// Make sure we have a valid env
+if (process.env.AWS_SECRET_KEY_ID === undefined ||
+  process.env.AWS_SECRET_ACCESS_KEY === undefined ||
+  process.env.S3_BUCKET_NAME === undefined) {
+  console.error('Please provide valid environment variables.');
+  process.exit(1);
+}
 
 var meta_folder = process.env.META_FOLDER || 'meta';
 

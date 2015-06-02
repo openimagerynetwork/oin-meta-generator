@@ -2,6 +2,7 @@
 
 require('envloader').load();
 
+var path = require('path');
 var fs = require('fs-extra');
 var s3 = require('s3');
 var gdalinfo = require('gdalinfo-json');
@@ -39,6 +40,7 @@ var client = s3.createClient({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
   }
 });
+console.info('Successfully connected to S3 bucket, now retrieving data.');
 
 var params = {
   s3Params: {
@@ -55,12 +57,16 @@ var totalMetaCount = 0;
 
 function iterator (i, end, payload) {
   if (i < end) {
-    var f = payload[i].Key.split('.');
-    if (f[f.length - 1].toUpperCase() === 'TIF') {
+    // End interation if we're out of range
+    // https://github.com/openimagerynetwork/oin-meta-generator/issues/4
+    if (payload[i] === undefined) {
+      return;
+    }
+    if (path.extname(payload[i].Key) === '.TIF') {
       var url = s3.getPublicUrlHttp(params.s3Params.Bucket, payload[i].Key);
       generateMeta(url, config.platform, config.provider, config.contact, config.properties, function (err, msg) {
         if (err) {
-          console.log(err);
+          console.error(err);
           return;
         }
         totalMetaCount++;
@@ -75,13 +81,19 @@ images.on('data', function (data) {
   var total = data.Contents.length;
   var chunks = Math.floor(total / limitParallel);
 
-  for (var i = 0; i < limitParallel; i++) {
-    var start = chunks * i;
+  var startIterator = function (start, chunks) {
     iterator(start, start + chunks, data.Contents);
+  };
+
+  for (var i = 0; i <= limitParallel; i++) {
+    var start = chunks * i;
+    // Add timeout so we don't hit magic rate limit?
+    // https://github.com/openimagerynetwork/oin-meta-generator/issues/5
+    setTimeout(startIterator.bind(null, start, chunks), 2 * 1000 * i);
   }
 });
 
-images.on('error', function(err) {
+images.on('error', function (err) {
   console.error('Caught an Error:', err.stack);
 });
 
@@ -99,7 +111,7 @@ var generateMeta = function (url, platform, provider, contact, properties, callb
     platform: platform,
     provider: provider,
     contact: contact,
-    properties: properties
+    properties: _.cloneDeep(properties)
   };
 
   gdalinfo.remote(url, function (err, oin) {
@@ -115,6 +127,20 @@ var generateMeta = function (url, platform, provider, contact, properties, callb
     metadata.title = filename;
     metadata.projection = oin.srs;
     metadata.gsd = _.sum(oin.pixel_size.map(Math.abs)) / 2 / 100;
+
+    /*
+     * Below is an example of how to dynamically assign TMS urls.
+     *
+     * In this example, the tms property in the config.json looked like below:
+     * http://a.tiles.mapbox.com/v4/{{MAP_ID}}/{z}/{x}/{y}.png?access_token=YOUR_ACCESS_TOKEN
+     *
+     * A simple string replace inserts the filename in place of the MAP_ID variable and you
+     * could do the same for YOUR_ACCESS_TOKEN
+     *
+     */
+
+    // Update TMS name
+    // metadata.properties.tms = properties.tms.replace('{{MAP_ID}}', 'project.' + path.basename(filename, '.TIF'));
 
     var x = [];
     var y = [];

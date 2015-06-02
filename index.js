@@ -64,7 +64,8 @@ function iterator (i, end, payload) {
     }
     if (path.extname(payload[i].Key) === '.TIF') {
       var url = s3.getPublicUrlHttp(params.s3Params.Bucket, payload[i].Key);
-      generateMeta(url, config.platform, config.provider, config.contact, config.properties, function (err, msg) {
+      var fileSize = payload[i].Size;
+      generateMeta(url, fileSize, config.platform, config.provider, config.contact, config.properties, function (err, msg) {
         if (err) {
           console.error(err);
           return;
@@ -97,7 +98,7 @@ images.on('error', function (err) {
   console.error('Caught an Error:', err.stack);
 });
 
-var generateMeta = function (url, platform, provider, contact, properties, callback) {
+var generateMeta = function (url, fileSize, platform, provider, contact, properties, callback) {
   var metadata = {
     uuid: null,
     title: null,
@@ -127,6 +128,7 @@ var generateMeta = function (url, platform, provider, contact, properties, callb
     metadata.title = filename;
     metadata.projection = oin.srs;
     metadata.gsd = _.sum(oin.pixel_size.map(Math.abs)) / 2 / 100;
+    metadata.file_size = fileSize;
 
     /*
      * Below is an example of how to dynamically assign TMS urls.

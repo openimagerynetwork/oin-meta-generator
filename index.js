@@ -62,7 +62,7 @@ function iterator (i, end, payload) {
     if (payload[i] === undefined) {
       return;
     }
-    if (path.extname(payload[i].Key) === '.TIF') {
+    if (path.extname(payload[i].Key).toUpperCase() === '.TIF') {
       var url = s3.getPublicUrlHttp(params.s3Params.Bucket, payload[i].Key);
       var fileSize = payload[i].Size;
       generateMeta(url, fileSize, config.platform, config.provider, config.contact, config.properties, function (err, msg) {

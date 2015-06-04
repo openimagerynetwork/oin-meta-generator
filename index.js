@@ -127,7 +127,7 @@ var generateMeta = function (url, fileSize, platform, provider, contact, propert
     metadata.uuid = oin.url;
     metadata.title = filename;
     metadata.projection = oin.srs;
-    metadata.gsd = _.sum(oin.pixel_size.map(Math.abs)) / 2 / 100;
+    metadata.gsd = _.sum(oin.pixel_size.map(Math.abs)) / 2;
     metadata.file_size = fileSize;
 
     /*

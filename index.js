@@ -59,7 +59,8 @@ console.info('Successfully connected to S3 bucket, now retrieving data.');
 
 var params = {
   s3Params: {
-    Bucket: process.env.S3_BUCKET_NAME /* required */
+    Bucket: process.env.S3_BUCKET_NAME, /* required */
+    Prefix: process.env.S3_BUCKET_PREFIX || ''
   }
 };
 

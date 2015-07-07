@@ -7,6 +7,13 @@ var fs = require('fs-extra');
 var s3 = require('s3');
 var gdalinfo = require('gdalinfo-json');
 var _ = require('lodash');
+var http = require('http');
+var https = require('https');
+
+/*
+ *  You can set which file extensions to query
+ */
+var fileTypes = ['.TIF', '.tif', '.TIFF', '.tiff'];
 
 // Make sure we have a config file
 var config;
@@ -17,17 +24,14 @@ try {
   process.exit(1);
 }
 
-// Make sure we have a valid env
-if (process.env.AWS_SECRET_KEY_ID === undefined ||
-  process.env.AWS_SECRET_ACCESS_KEY === undefined ||
-  process.env.S3_BUCKET_NAME === undefined) {
-  console.error('Please provide valid environment variables.');
-  process.exit(1);
-}
-
 var meta_folder = process.env.META_FOLDER || 'meta';
 
 var limitParallel = 20;
+
+// Upping concurrency limit on Node <= 10
+// https://github.com/openimagerynetwork/oin-meta-generator/issues/14
+http.globalAgent.maxSockets = Math.max(http.globalAgent.maxSockets, 20);
+https.globalAgent.maxSockets = Math.max(https.globalAgent.maxSockets, 20);
 
 var client = s3.createClient({
   maxAsyncS3: 20,     // this is the default
@@ -36,10 +40,21 @@ var client = s3.createClient({
   multipartUploadThreshold: 20971520, // this is the default (20 MB)
   multipartUploadSize: 15728640, // this is the default (15 MB)
   s3Options: {
-    accessKeyId: process.env.AWS_SECRET_KEY_ID,
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
   }
 });
+
+// Make sure we have valid credentials, either from env variables
+// or from sources like $HOME/.aws/credentials or $HOME/.aws-credentials-master
+if (client.s3.config.credentials === null) {
+  console.error('Please provide valid credentials, either from environment ' +
+    'variables or through sources like $HOME/.aws/credentials or ' +
+    '$HOME/.aws-credentials-master');
+  process.exit(1);
+}
+
+// If we're still alive, we have valid credentials
 console.info('Successfully connected to S3 bucket, now retrieving data.');
 
 var params = {
@@ -62,7 +77,7 @@ function iterator (i, end, payload) {
     if (payload[i] === undefined) {
       return;
     }
-    if (path.extname(payload[i].Key).toUpperCase() === '.TIF') {
+    if (_.includes(fileTypes, path.extname(payload[i].Key))) {
       var url = s3.getPublicUrlHttp(params.s3Params.Bucket, payload[i].Key);
       var fileSize = payload[i].Size;
       generateMeta(url, fileSize, config.platform, config.provider, config.contact, config.properties, function (err, msg) {

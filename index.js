@@ -17,14 +17,6 @@ try {
   process.exit(1);
 }
 
-// Make sure we have a valid env
-if (process.env.AWS_ACCESS_KEY_ID === undefined ||
-  process.env.AWS_SECRET_ACCESS_KEY === undefined ||
-  process.env.S3_BUCKET_NAME === undefined) {
-  console.error('Please provide valid environment variables.');
-  process.exit(1);
-}
-
 var meta_folder = process.env.META_FOLDER || 'meta';
 
 var limitParallel = 20;
@@ -40,6 +32,17 @@ var client = s3.createClient({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
   }
 });
+
+// Make sure we have valid credentials, either from env variables
+// or from sources like $HOME/.aws/credentials or $HOME/.aws-credentials-master
+if (client.s3.config.credentials === null) {
+  console.error('Please provide valid credentials, either from environment ' +
+    'variables or through sources like $HOME/.aws/credentials or ' +
+    '$HOME/.aws-credentials-master');
+  process.exit(1);
+}
+
+// If we're still alive, we have valid credentials
 console.info('Successfully connected to S3 bucket, now retrieving data.');
 
 var params = {

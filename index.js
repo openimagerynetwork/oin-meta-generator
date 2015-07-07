@@ -10,6 +10,11 @@ var _ = require('lodash');
 var http = require('http');
 var https = require('https');
 
+/*
+ *  You can set which file extensions to query
+ */
+var fileTypes = ['.TIF', '.tif', '.TIFF', '.tiff'];
+
 // Make sure we have a config file
 var config;
 try {
@@ -71,7 +76,7 @@ function iterator (i, end, payload) {
     if (payload[i] === undefined) {
       return;
     }
-    if (path.extname(payload[i].Key).toUpperCase() === '.TIF') {
+    if (_.includes(fileTypes, path.extname(payload[i].Key))) {
       var url = s3.getPublicUrlHttp(params.s3Params.Bucket, payload[i].Key);
       var fileSize = payload[i].Size;
       generateMeta(url, fileSize, config.platform, config.provider, config.contact, config.properties, function (err, msg) {

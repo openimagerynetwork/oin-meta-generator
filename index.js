@@ -7,6 +7,8 @@ var fs = require('fs-extra');
 var s3 = require('s3');
 var gdalinfo = require('gdalinfo-json');
 var _ = require('lodash');
+var http = require('http');
+var https = require('https');
 
 // Make sure we have a config file
 var config;
@@ -20,6 +22,10 @@ try {
 var meta_folder = process.env.META_FOLDER || 'meta';
 
 var limitParallel = 20;
+
+// Upping concurrency limit on Node <= 10
+// https://github.com/openimagerynetwork/oin-meta-generator/issues/14
+http.globalAgent.maxSockets = https.globalAgent.maxSockets = 20;
 
 var client = s3.createClient({
   maxAsyncS3: 20,     // this is the default

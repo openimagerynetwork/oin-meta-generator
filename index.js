@@ -18,7 +18,7 @@ try {
 }
 
 // Make sure we have a valid env
-if (process.env.AWS_SECRET_KEY_ID === undefined ||
+if (process.env.AWS_ACCESS_KEY_ID === undefined ||
   process.env.AWS_SECRET_ACCESS_KEY === undefined ||
   process.env.S3_BUCKET_NAME === undefined) {
   console.error('Please provide valid environment variables.');
@@ -36,7 +36,7 @@ var client = s3.createClient({
   multipartUploadThreshold: 20971520, // this is the default (20 MB)
   multipartUploadSize: 15728640, // this is the default (15 MB)
   s3Options: {
-    accessKeyId: process.env.AWS_SECRET_KEY_ID,
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
   }
 });

@@ -30,7 +30,8 @@ var limitParallel = 20;
 
 // Upping concurrency limit on Node <= 10
 // https://github.com/openimagerynetwork/oin-meta-generator/issues/14
-http.globalAgent.maxSockets = https.globalAgent.maxSockets = 20;
+http.globalAgent.maxSockets = Math.max(http.globalAgent.maxSockets, 20);
+https.globalAgent.maxSockets = Math.max(https.globalAgent.maxSockets, 20);
 
 var client = s3.createClient({
   maxAsyncS3: 20,     // this is the default

@@ -146,9 +146,17 @@ var generateMeta = function (url, fileSize, platform, provider, contact, acquisi
     metadata.projection = oin.srs;
     metadata.gsd = _.sum(oin.pixel_size.map(Math.abs)) / 2;
     metadata.file_size = fileSize;
-    if (metadata.properties.thumbnail === "default") {
-      metadata.properties.thumbnail = (filename + '.thumb.jpg');
-    }
+    metadata.properties.thumbnail =
+      path.parse(oin.url).dir + path.sep +
+      config.properties.thumbnail.replace('{{IMAGE_NAME}}', path.basename(oin.url, '.tiff'));
+
+    /*
+     * Here you can overwrite any values based on your custom imagery.
+     *
+     * For example, a date based on the filename:
+     * metadata.aquisition_start = new Date(filename.substr(2, 6));
+     *
+     */
 
     /*
      * Below is an example of how to dynamically assign TMS urls.

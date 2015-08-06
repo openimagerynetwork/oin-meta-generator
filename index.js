@@ -147,8 +147,7 @@ var generateMeta = function (url, fileSize, platform, provider, contact, acquisi
     metadata.gsd = _.sum(oin.pixel_size.map(Math.abs)) / 2;
     metadata.file_size = fileSize;
     metadata.properties.thumbnail =
-      path.parse(oin.url).dir + path.sep +
-      config.properties.thumbnail.replace('{{IMAGE_NAME}}', path.basename(oin.url, '.tiff'));
+      config.properties.thumbnail.replace('{{IMAGE_NAME}}', oin.url);
 
     /*
      * Here you can overwrite any values based on your custom imagery.

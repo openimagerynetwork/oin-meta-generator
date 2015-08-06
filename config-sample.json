@@ -2,8 +2,10 @@
   "platform" : "satellite",
   "provider" : "some satellite company",
   "contact" : "someone@satellitecompany.com",
+  "acquisition_start": "Start date the imagery was captured", // eg. "2013-11-15T00:00:00.000"
+  "acquisition_end": "End date the imagery was captured", // eg. "2013-11-15T14:30:00.000"
   "properties": {
-  	"thumbnail": "link to thumbnail if available",
+  	"thumbnail": "{{IMAGE_NAME}}.thumb.jpg", // {{IMAGE_NAME}} will be filled in with image name when run
   	"tms": "link to TMS if available",
   	"sensor": "name of satellite"
   }

@@ -81,7 +81,7 @@ function iterator (i, end, payload) {
     if (_.includes(fileTypes, path.extname(payload[i].Key))) {
       var url = s3.getPublicUrlHttp(params.s3Params.Bucket, payload[i].Key);
       var fileSize = payload[i].Size;
-      generateMeta(url, fileSize, config.platform, config.provider, config.contact, config.properties, function (err, msg) {
+      generateMeta(url, fileSize, config.platform, config.provider, config.contact, config.acquisition_start, config.acquisition_end, config.properties, function (err, msg) {
         if (err) {
           console.error(err);
           return;
@@ -114,7 +114,8 @@ images.on('error', function (err) {
   console.error('Caught an Error:', err.stack);
 });
 
-var generateMeta = function (url, fileSize, platform, provider, contact, properties, callback) {
+var generateMeta = function (url, fileSize, platform, provider, contact, acquisition_start, acquisition_end, properties, callback) {
+
   var metadata = {
     uuid: null,
     title: null,
@@ -123,8 +124,8 @@ var generateMeta = function (url, fileSize, platform, provider, contact, propert
     footprint: null,
     gsd: null,
     file_size: null,
-    acquisition_start: null,
-    acquisition_end: null,
+    acquisition_start: acquisition_start,
+    acquisition_end: acquisition_end,
     platform: platform,
     provider: provider,
     contact: contact,
@@ -145,6 +146,9 @@ var generateMeta = function (url, fileSize, platform, provider, contact, propert
     metadata.projection = oin.srs;
     metadata.gsd = _.sum(oin.pixel_size.map(Math.abs)) / 2;
     metadata.file_size = fileSize;
+    if (metadata.properties.thumbnail === "default") {
+      metadata.properties.thumbnail = (filename + '.thumb.jpg');
+    }
 
     /*
      * Below is an example of how to dynamically assign TMS urls.

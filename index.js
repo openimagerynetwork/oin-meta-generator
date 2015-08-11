@@ -9,6 +9,7 @@ var gdalinfo = require('gdalinfo-json');
 var _ = require('lodash');
 var http = require('http');
 var https = require('https');
+var applyGdalinfo = require('./lib/apply-gdalinfo');
 
 /*
  *  You can set which file extensions to query
@@ -138,13 +139,11 @@ var generateMeta = function (url, fileSize, platform, provider, contact, acquisi
       return;
     }
 
+    applyGdalinfo(metadata, oin);
+
     var filename = oin.url.split('/');
     filename = filename[filename.length - 1];
-
-    metadata.uuid = oin.url;
     metadata.title = filename;
-    metadata.projection = oin.srs;
-    metadata.gsd = _.sum(oin.pixel_size.map(Math.abs)) / 2;
     metadata.file_size = fileSize;
     metadata.properties.thumbnail =
       config.properties.thumbnail.replace('{{IMAGE_NAME}}', oin.url);
@@ -170,36 +169,6 @@ var generateMeta = function (url, fileSize, platform, provider, contact, acquisi
 
     // Update TMS name
     // metadata.properties.tms = properties.tms.replace('{{MAP_ID}}', 'project.' + path.basename(filename, '.TIF'));
-
-    var x = [];
-    var y = [];
-    var footprint = [null, null, null, null, null];
-
-    for (var key in oin.corners_lon_lat) {
-      if (oin.corners_lon_lat.hasOwnProperty(key)) {
-        x.push(oin.corners_lon_lat[key][0]);
-        y.push(oin.corners_lon_lat[key][1]);
-        if (key === 'upper_left') {
-          footprint[0] = oin.corners_lon_lat[key][0] + ' ' + oin.corners_lon_lat[key][1];
-          footprint[4] = oin.corners_lon_lat[key][0] + ' ' + oin.corners_lon_lat[key][1];
-        }
-
-        if (key === 'upper_right') {
-          footprint[1] = oin.corners_lon_lat[key][0] + ' ' + oin.corners_lon_lat[key][1];
-        }
-
-        if (key === 'lower_right') {
-          footprint[2] = oin.corners_lon_lat[key][0] + ' ' + oin.corners_lon_lat[key][1];
-        }
-
-        if (key === 'lower_left') {
-          footprint[3] = oin.corners_lon_lat[key][0] + ' ' + oin.corners_lon_lat[key][1];
-        }
-      }
-    }
-
-    metadata.bbox = [_.min(x), _.min(y), _.max(x), _.max(y)];
-    metadata.footprint = 'POLYGON((' + footprint.join() + '))';
 
     fs.writeFile(meta_folder + '/' + filename + '_meta.json', JSON.stringify(metadata), function (err) {
       if (err) {

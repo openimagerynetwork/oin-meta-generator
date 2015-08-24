@@ -42,7 +42,7 @@ Output data is saved to the `meta` directory by default (changeable) and will lo
   "gsd": 0.000833333333333,
   "file_size": 953117,
   "acquisition_start":"2015-03-02T00:00:00.000",
-  "acquisition_end":"2015-03-03T00:00:00.000"
+  "acquisition_end":"2015-03-03T00:00:00.000",
   "platform": "satellite",
   "provider": "some satellite company",
   "contact": "someone@satellitecompany.com",

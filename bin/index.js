@@ -77,6 +77,17 @@ var metadata = {
   }, {})
 };
 
+// filter out null values
+metadata = Object.keys(metadata)
+  .filter(function (k) {
+    return metadata[k] != null;
+  })
+  .reduce(function (obj, k) {
+    obj[k] = metadata[k];
+
+    return obj;
+  }, {});
+
 var stats = fs.statSync(filename);
 metadata.file_size = stats.size;
 

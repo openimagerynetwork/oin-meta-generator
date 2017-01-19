@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/scisco/oam-meta-generator.git"
+    "url": "https://github.com/openimagerynetwork/oam-meta-generator.git"
   },
   "keywords": [
     "OpenAerialMap",
@@ -20,9 +20,9 @@
   "author": "Development Seed",
   "license": "CC01",
   "bugs": {
-    "url": "https://github.com/scisco/oam-meta-generator/issues"
+    "url": "https://github.com/openimagerynetwork/oam-meta-generator/issues"
   },
-  "homepage": "https://github.com/scisco/oam-meta-generator",
+  "homepage": "https://github.com/openimagerynetwork/oam-meta-generator",
   "dependencies": {
     "envloader": "0.0.2",
     "fs-extra": "^0.18.3",

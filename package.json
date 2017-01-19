@@ -1,7 +1,7 @@
 {
-  "name": "oam-meta-generator",
+  "name": "oin-meta-generator",
   "version": "0.1.0",
-  "description": "A metadata generator for OAM imagery",
+  "description": "A metadata generator for OIN imagery",
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/semistandard/bin/cmd.js",

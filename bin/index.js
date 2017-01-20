@@ -43,6 +43,11 @@ var argv = yargs.usage('Usage: $0 [args] <file>')
     describe: 'Data provider contact info',
     requiresArg: true
   })
+  .option('U', {
+    alias: 'uploaded-at',
+    describe: 'Date uploaded',
+    requiresArg: true
+  })
   .option('m', {
     alias: 'additional-metadata',
     describe: 'Additional metadata (sensor=WV3, etc.)',
@@ -68,6 +73,7 @@ var metadata = {
   platform: argv.platform,
   provider: argv.provider,
   contact: argv.contact,
+  uploaded_at: new Date(argv.uploadedAt) || null,
   properties: argv.additionalMetadata.reduce(function (obj, pair) {
     var parts = pair.split("=", 2);
 

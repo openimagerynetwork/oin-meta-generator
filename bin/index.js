@@ -72,7 +72,7 @@ var metadata = {
   platform: argv.platform,
   provider: argv.provider,
   contact: argv.contact,
-  properties: argv.additionalMetadata.reduce(function (obj, pair) {
+  properties: (argv.additionalMetadata || []).reduce(function (obj, pair) {
     var parts = pair.split('=', 2);
 
     obj[parts[0]] = parts[1];

@@ -17,7 +17,7 @@ You must have GDAL installed.
 
     $ npm start
 
-The defaul setting runs 20 tasks in parallel. You can change the number by playing around with `var limitParallel = 20;` on line 13 of `index.js`
+The default setting runs 20 tasks in parallel. You can change the number by playing around with `var limitParallel = 20;` on line 13 of `index.js`
 
 ### Expected Output
 

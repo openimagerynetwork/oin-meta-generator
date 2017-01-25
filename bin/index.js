@@ -75,7 +75,7 @@ var metadata = {
   contact: argv.contact,
   uploaded_at: new Date(argv.uploadedAt) || null,
   properties: argv.additionalMetadata.reduce(function (obj, pair) {
-    var parts = pair.split("=", 2);
+    var parts = pair.split('=', 2);
 
     obj[parts[0]] = parts[1];
 

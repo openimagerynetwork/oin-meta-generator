@@ -26,6 +26,7 @@
   "homepage": "https://github.com/scisco/oam-meta-generator",
   "dependencies": {
     "envloader": "0.0.2",
+    "epipebomb": "^1.0.0",
     "fs-extra": "^0.18.3",
     "gdalinfo-json": "^0.4.0",
     "lodash": "^3.8.0",

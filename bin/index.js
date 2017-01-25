@@ -3,6 +3,7 @@
 var fs = require('fs');
 
 var gdalinfo = require('gdalinfo-json');
+require('epipebomb')();
 var yargs = require('yargs');
 
 var applyGdalinfo = require('../lib/apply-gdalinfo');

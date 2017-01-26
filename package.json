@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "A metadata generator for OIN imagery",
   "main": "index.js",
+  "bin": "bin/index.js",
   "scripts": {
     "test": "./node_modules/semistandard/bin/cmd.js",
     "start": "node index.js"
@@ -25,10 +26,12 @@
   "homepage": "https://github.com/openimagerynetwork/oam-meta-generator",
   "dependencies": {
     "envloader": "0.0.2",
+    "epipebomb": "^1.0.0",
     "fs-extra": "^0.18.3",
     "gdalinfo-json": "github:mojodna/gdalinfo-json#upgrade-gdal",
     "lodash": "^3.8.0",
-    "s3": "^4.4.0"
+    "s3": "^4.4.0",
+    "yargs": "^6.6.0"
   },
   "devDependencies": {
     "semistandard": "^4.1.4"

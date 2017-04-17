@@ -1,14 +1,13 @@
 #!/usr/bin/env node
 
-var fs = require('fs');
+const fs = require('fs');
 
-var gdalinfo = require('gdalinfo-json');
 require('epipebomb')();
-var yargs = require('yargs');
+const yargs = require('yargs');
 
-var applyGdalinfo = require('../lib/apply-gdalinfo');
+const GdalInfo = require('../lib/GdalInfo');
 
-var argv = yargs.usage('Usage: $0 [args] <file>')
+const argv = yargs.usage('Usage: $0 [args] <file>')
   .option('u', {
     alias: 'uuid',
     describe: 'Source UUID',
@@ -64,16 +63,16 @@ var argv = yargs.usage('Usage: $0 [args] <file>')
   .version()
   .argv;
 
-var filename = argv._[0];
+const filename = argv._[0];
 
-var metadata = {
+let metadata = {
   uuid: argv.uuid,
   title: argv.title,
   platform: argv.platform,
   provider: argv.provider,
   contact: argv.contact,
   properties: (argv.additionalMetadata || []).reduce(function (obj, pair) {
-    var parts = pair.split('=', 2);
+    const parts = pair.split('=', 2);
 
     obj[parts[0]] = parts[1];
 
@@ -93,7 +92,7 @@ if (argv.uploadedAt) {
   metadata.uploaded_at = new Date(argv.uploadedAt);
 }
 
-// filter out null values
+// Filter out null values
 metadata = Object.keys(metadata)
   .filter(function (k) {
     return metadata[k] != null;
@@ -104,15 +103,13 @@ metadata = Object.keys(metadata)
     return obj;
   }, {});
 
-var stats = fs.statSync(filename);
+const stats = fs.statSync(filename);
 metadata.file_size = stats.size;
 
-gdalinfo.local(filename, function (err, oin) {
-  if (err) {
-    throw err;
-  }
+const imagery = new GdalInfo(filename);
+metadata.projection = imagery.projectionAsWKT();
+metadata.gsd = imagery.calculatePixelSize();
+metadata.bbox = imagery.bboxAsArray();
+metadata.footprint = imagery.bboxAsWKT();
 
-  applyGdalinfo(metadata, oin);
-
-  process.stdout.write(JSON.stringify(metadata));
-});
+process.stdout.write(JSON.stringify(metadata));

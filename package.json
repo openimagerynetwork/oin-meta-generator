@@ -1,6 +1,6 @@
 {
   "name": "oin-meta-generator",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A metadata generator for OIN imagery",
   "main": "index.js",
   "bin": "bin/index.js",

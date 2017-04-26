@@ -14,14 +14,24 @@ describe('Getting GDAL info', function () {
   describe('The Bounding Box', function () {
     it('should output the 4 corners', function () {
       expect(metricImagery.bboxAsArray()).to.deep.eq(
-        [481235, 3084435, 504335, 3107535]
+        [
+          86.80898421199673,
+          27.88461236744702,
+          87.04412764300424,
+          28.093267989875276
+        ]
       );
     });
 
     it('should output the 4 corners as a WKT POLYGON()', function () {
       expect(metricImagery.bboxAsWKT()).to.eq(
-        'POLYGON ((481235 3107535,504335 3107535,' +
-        '504335 3084435,481235 3084435,481235 3107535))'
+        'POLYGON ((' +
+          '86.8089842119967 27.884612367447,' +
+          '87.0441276430042 27.884612367447,' +
+          '87.0441276430042 28.0932679898753,' +
+          '86.8089842119967 28.0932679898753,' +
+          '86.8089842119967 27.884612367447' +
+        '))'
       );
     });
   });
@@ -93,7 +103,12 @@ describe('CLI usage', function () {
       expect(result.acquisition_end).to.eq('2015-04-30T00:00:00.000Z');
       expect(result.properties.sensor).to.eq('Some Algorithm');
       expect(result.projection).to.contain('WGS 84 / UTM zone 45N');
-      expect(result.bbox).to.deep.eq([481235, 3084435, 504335, 3107535]);
+      expect(result.bbox).to.deep.eq([
+        86.80898421199673,
+        27.88461236744702,
+        87.04412764300424,
+        28.093267989875276
+      ]);
       done();
     });
   });
